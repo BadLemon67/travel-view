@@ -5,10 +5,10 @@
 <!--    </div>-->
     <div class="login_box">
       <div class="avatar_box">
-        <img src="../assets/pic/logo.png" alt="" class="avatar_box_img">
+        <img src="../assets/pic/logo.png" class="avatar_box_img">
       </div>
       <el-form class="login_form" :model="loginForm" ref="loginValidateForm">
-        <el-form-item >
+        <el-form-item prop="username">
           <el-input v-model="loginForm.username" placeholder="用户名" prefix-icon="el-icon-user" clearable></el-input>
         </el-form-item>
 <!--        <span v-show="showMsg">用户名不存在</span>-->
@@ -16,8 +16,7 @@
           <el-input v-model="loginForm.password" placeholder="密码" prefix-icon="el-icon-lock" show-password clearable></el-input>
         </el-form-item>
         <el-form-item class="login_box_btn">
-          <el-button type="primary" @click="loginSys" round>登录</el-button>
-          <el-button type="warning" round>注册</el-button>
+          <el-button type="primary" @click="loginSys" :loading="isLoading" plain round>登录</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -33,20 +32,28 @@ export default {
         username: '',
         password: ''
       },
-      /** 表单验证 */
-      loginFormRules: {
-        username: [],
-        password: []
-      }
+      rules: {
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' }
+        ]
+      },
+      isLoading: false
     }
   },
   methods: {
     async loginSys () {
-      const { data: result } = await this.$http.post('/api/sys/login/login', this.loginForm)
-      if (result.code !== 0) {
-        alert(result.msg)
-        this.loginForm.password = ''
-      }
+      this.isLoading = true
+      await this.$http.post('/api/sys/login/login', this.loginForm).then(
+        (response) => {
+          const data = response.data
+          if (data.code !== 0) {
+            this.isLoading = false
+            this.password = ''
+            alert(data.msg)
+            return false
+          }
+        }
+      )
     }
   }
 }
@@ -95,6 +102,7 @@ export default {
   width: 100%;
   padding: 0 20px;
   box-sizing: border-box;
+  -webkit-user-drag: none;
 }
 
 .login_title_box {
