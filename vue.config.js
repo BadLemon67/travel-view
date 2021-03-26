@@ -4,20 +4,14 @@ module.exports = {
   assetsDir: 'static',
   productionSourceMap: false,
   devServer: {
-    port: 8085,
+    host: '0.0.0.0',
+    port: 8081,
+    https: false,
     open: true,
     overlay: {
       warning: false,
       errors: true
     },
-    proxy: {
-      '/api': {
-        target: 'http://192.168.1.11:8086/webserver',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/api': ''
-        }
-      }
-    }
+    proxy: null
   }
 }

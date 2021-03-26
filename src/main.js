@@ -6,7 +6,18 @@ import './plugins/element.js'
 import './assets/css/global.css'
 import axios from 'axios'
 
-Vue.prototype.$http = axios
+axios.defaults.baseURL = 'http://8.142.20.7:8086/webserver'
+axios.interceptors.request.use(config => {
+  const token = window.localStorage.getItem('token')
+  if (token) {
+    config.headers.token = token
+  }
+  return config
+}, (error) => {
+  Vue.$router.push('/login')
+  return Promise.reject(error)
+})
+Vue.prototype.$axios = axios
 
 Vue.config.productionTip = false
 

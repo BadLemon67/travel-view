@@ -4,7 +4,7 @@
       <div>
         <el-carousel :interval="4000" height="1000px" direction="vertical" style="z-index: 0;">
           <el-carousel-item v-for="pic of pics" :key="pic">
-            <img :src="pic" class="img_scroll" alt="加载失败">
+            <el-image :src="pic" class="img_scroll" alt="加载失败"></el-image>>
           </el-carousel-item>
         </el-carousel>
       </div>
@@ -14,7 +14,7 @@
         </div>
         <el-form class="login_form" :model="loginForm" ref="loginValidateForm">
           <el-form-item prop="username">
-            <el-input v-model="loginForm.username" placeholder="用户名" prefix-icon="el-icon-user" clearable></el-input>
+            <el-input v-model="loginForm.loginName" placeholder="用户名" prefix-icon="el-icon-user" clearable></el-input>
           </el-form-item>
           <!--        <span v-show="showMsg">用户名不存在</span>-->
           <el-form-item>
@@ -22,7 +22,7 @@
           </el-form-item>
           <el-form-item class="login_box_btn">
             <el-button type="primary" @click="loginSys" :loading="isLoading" round>登录</el-button>
-            <el-button type="primary" @click="sign" plain round>注册</el-button>
+            <el-button type="primary" @click="sign" plain round disabled>注册</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -37,38 +37,49 @@ export default {
     return {
       /** 登录表单 */
       loginForm: {
-        username: '',
+        loginName: '',
         password: ''
       },
       rules: {
         username: [
-          { required: true, message: '请输入用户名', trigger: 'blur' }
+          {
+            required: true,
+            message: '请输入用户名',
+            trigger: 'blur'
+          }
         ]
       },
       isLoading: false,
-      pics: {
-        img1: require('../assets/pic/jk.jpg'),
-        img2: require('../assets/pic/公主殿下.jpg'),
-        img3: require('../assets/pic/吾王.jpg'),
-        img4: require('../assets/pic/智子.jpg'),
-        img5: require('../assets/pic/芭蕾.jpg'),
-        img6: require('../assets/pic/雪下油纸伞.jpg')
-      },
+      pics: [
+        'https://travel-pengr.oss-cn-chengdu.aliyuncs.com/%E5%A4%9C%E6%99%AF.ea4e4124.jpg',
+        'https://travel-pengr.oss-cn-chengdu.aliyuncs.com/%E7%A7%92%E9%80%9F.jpg',
+        'https://travel-pengr.oss-cn-chengdu.aliyuncs.com/%E9%BB%84%E6%98%8F.jpg'
+      ],
       arrowFlag: 'never'
     }
   },
   methods: {
     async loginSys () {
       this.isLoading = true
-      await this.$http.post('/api/sys/login/login', this.loginForm).then(
+      await this.$axios({
+        method: 'POST',
+        url: '/sys/user/login',
+        data: this.loginForm
+      }).then(
         (response) => {
           const data = response.data
           if (data.code !== 0) {
-            this.isLoading = false
             this.password = ''
             alert(data.msg)
+            this.isLoading = false
             return false
           }
+          const token = data.token
+          localStorage.setItem('token', token)
+          this.isLoading = false
+          alert(data.msg + '\n' + 'token:' + data.token)
+          // this.$router.push('/home')
+          return true
         }
       )
     },
