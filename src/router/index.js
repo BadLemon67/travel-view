@@ -1,16 +1,16 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import fLogin from '../components/fd-Login.vue'
-import fSign from '../components/fd-Sign.vue'
+import Login from '../components/Login'
+import Home from '../components/Home'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/login', component: fLogin
+    path: '/login', component: Login
   },
   {
-    path: '/sign', component: fSign
+    path: '/home', component: Home
   },
   {
     path: '/', redirect: '/login'
