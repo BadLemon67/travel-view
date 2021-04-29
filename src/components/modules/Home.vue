@@ -1,8 +1,5 @@
 <template>
   <div>
-    <span>Welcome, {{username}}</span>
-    <br>
-    <el-button type="warning" @click="logout" round>登出</el-button>
   </div>
 </template>
 
@@ -14,9 +11,10 @@ export default {
     }
   },
   beforeMount () {
-    this.getUsername()
+    // this.getUsername()
   },
   methods: {
+    /** 获取用户名 */
     async getUsername () {
       await this.$axios({
         method: 'POST',
@@ -32,6 +30,19 @@ export default {
           return true
         }
       )
+    },
+    dropdownCommand (type) {
+      switch (type) {
+        case 'logout': this.logout(); break
+        default: break
+      }
+    },
+    openHandler (key, keyPath) {
+      if (key) {
+        this.$router.push({
+          path: key
+        })
+      }
     },
     async logout () {
       await this.$axios({
@@ -53,6 +64,5 @@ export default {
 }
 </script>
 
-<style>
-
+<style lang="css">
 </style>

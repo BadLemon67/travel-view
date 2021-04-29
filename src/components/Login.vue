@@ -2,7 +2,7 @@
   <div class="login_container">
     <div class="carousel_box">
       <div>
-        <el-carousel :interval="4000" height="969px" direction="vertical" style="z-index: 0;height: auto">
+        <el-carousel :interval="4000" :height="variableHeight" direction="vertical" style="z-index: 0;">
           <el-carousel-item v-for="pic of pics" :key="pic" style="-webkit-user-drag: none">
             <el-image :src="pic" class="img_scroll" alt="加载失败"></el-image>
           </el-carousel-item>
@@ -14,10 +14,10 @@
         </div>
         <el-form class="loginAndSign_form" :model="loginForm" :rules="rules" v-show="loginOrSign">
           <el-form-item prop="login_loginName">
-            <el-input v-model="loginForm.loginName" placeholder="登录名" prefix-icon="el-icon-user-solid" clearable></el-input>
+            <el-input v-model="loginForm.loginName" @keyup.enter.native="loginSys" placeholder="登录名" prefix-icon="el-icon-user-solid" clearable></el-input>
           </el-form-item>
           <el-form-item prop="login_password">
-            <el-input v-model="loginForm.password" placeholder="密码" prefix-icon="el-icon-lock" show-password clearable></el-input>
+            <el-input v-model="loginForm.password" @keyup.enter.native="loginSys" placeholder="密码" prefix-icon="el-icon-lock" show-password clearable></el-input>
           </el-form-item>
           <el-form-item class="login_box_btn">
             <el-button type="primary" @click="loginSys" :loading="isLoading" round>登录</el-button>
@@ -25,8 +25,8 @@
           </el-form-item>
         </el-form>
         <el-form class="loginAndSign_form" :model="signForm" :rules="rules" v-show="!loginOrSign">
-          <el-form-item prop="mobile">
-            <el-input v-model="signForm.mobile" placeholder="手机号" prefix-icon="el-icon-phone" clearable></el-input>
+          <el-form-item prop="sign_mobile">
+            <el-input v-model="signForm.mobile" placeholder="手机号" prefix-icon="el-icon-phone" maxlength="11" clearable></el-input>
           </el-form-item>
           <el-form-item prop="sign_password">
             <el-input v-model="signForm.password" placeholder="密码" prefix-icon="el-icon-lock" show-password clearable></el-input>
@@ -97,6 +97,7 @@ export default {
         loginName: '',
         password: ''
       },
+      /** 注册表单 */
       signForm: {
         mobile: '',
         password: '',
@@ -117,7 +118,7 @@ export default {
         login_password: [
           { validator: validateLoginPwd, trigger: 'blur' }
         ],
-        sign_Mobile: [
+        sign_mobile: [
           { validator: validateSignMobile, trigger: 'blur' }
         ],
         sign_password: [
@@ -132,7 +133,20 @@ export default {
       },
       isLoading: false,
       arrowFlag: 'never',
-      loginOrSign: true // true : login, false : sign
+      loginOrSign: true, // true : login, false : sign
+      fullHeight: document.documentElement.clientHeight
+    }
+  },
+  watch: {
+    fullHeight (val) {
+      if (!this.timer) {
+        this.fullHeight = val
+        this.timer = true
+        const that = this
+        setTimeout(function () {
+          that.timer = false
+        }, 400)
+      }
     }
   },
   methods: {
@@ -154,7 +168,7 @@ export default {
           const token = data.token
           localStorage.setItem('token', token)
           this.isLoading = false
-          this.$router.push('/home')
+          this.$router.push('/backstage')
           return true
         }
       )
@@ -201,6 +215,23 @@ export default {
       this.signForm.password = ''
       this.signForm.confirmPwd = ''
       this.clearValidateMsg(refName)
+    },
+    getBodyHeight () {
+      const that = this
+      window.onresize = () => {
+        return (() => {
+          window.fullHeight = document.documentElement.clientHeight
+          that.fullHeight = window.fullHeight
+        })()
+      }
+    }
+  },
+  mounted () {
+    this.getBodyHeight()
+  },
+  computed: {
+    variableHeight () {
+      return this.fullHeight + 'px'
     }
   }
 }
@@ -218,14 +249,14 @@ export default {
 
 .img_scroll {
   display: inline-block;
-  height: auto;
   max-width: 100%;
+  height: auto;
   -webkit-user-drag: none;
 }
 
 .login_box {
-  width: 450px;
-  height: 300px;
+  width: 25%;
+  height: 40%;
   background-color: #ffffff;
   border-radius: 15px;
   position: absolute;
@@ -237,8 +268,8 @@ export default {
 
 .avatar_box {
   background-color: #ffffff;
-  height: 100px;
-  width: 100px;
+  width: 6vw;
+  height: 6vw;
   border: 1px solid #eeeeee;
   border-radius: 50%;
   padding: 10px;
@@ -258,14 +289,10 @@ export default {
 
 .loginAndSign_form {
   position: absolute;
-  bottom: 20px;
+  bottom: 5%;
   width: 100%;
   padding: 0 20px;
   box-sizing: border-box;
   -webkit-user-drag: none;
-}
-
-.el-form-item {
-  margin-bottom: 12px;
 }
 </style>

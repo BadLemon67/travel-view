@@ -5,7 +5,6 @@
 </template>
 
 <script>
-
 export default {
   name: 'app'
 }
@@ -19,5 +18,6 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+  -webkit-user-drag: none;
 }
 </style>
