@@ -61,10 +61,15 @@ const routes = [
         component: Ad
       }
     ]
+  },
+  {
+    path: '/backstage',
+    redirect: '/backstage/home'
   }
 ]
 
 const router = new VueRouter({
+  mode: 'history',
   routes
 })
 

@@ -43,22 +43,6 @@ export default {
           path: key
         })
       }
-    },
-    async logout () {
-      await this.$axios({
-        method: 'POST',
-        url: '/sys/user/logout'
-      }).then(
-        (response) => {
-          const data = response.data
-          if (data.code !== 0) {
-            this.$message.error(data.msg)
-            return false
-          }
-          this.$router.push('/login')
-          return true
-        }
-      )
     }
   }
 }

@@ -10,11 +10,11 @@
       </div>
       <div class="login_box">
         <div class="avatar_box" v-show="loginOrSign">
-          <img src="../assets/pic/logo.png" class="avatar_box_img" alt="用户头像">
+          <el-image :src="headUrl" class="avatar_box_img" alt="用户头像"></el-image>
         </div>
         <el-form class="loginAndSign_form" :model="loginForm" :rules="rules" v-show="loginOrSign">
           <el-form-item prop="login_loginName">
-            <el-input v-model="loginForm.loginName" @keyup.enter.native="loginSys" placeholder="登录名" prefix-icon="el-icon-user-solid" clearable></el-input>
+            <el-input v-model="loginForm.loginName" @keyup.enter.native="loginSys" v-on:input="getAvatar" placeholder="登录名" prefix-icon="el-icon-user-solid" clearable></el-input>
           </el-form-item>
           <el-form-item prop="login_password">
             <el-input v-model="loginForm.password" @keyup.enter.native="loginSys" placeholder="密码" prefix-icon="el-icon-lock" show-password clearable></el-input>
@@ -131,6 +131,7 @@ export default {
           { validator: validateSignOpacity, trigger: 'blur' }
         ]
       },
+      headUrl: 'https://travel-pengr.oss-cn-chengdu.aliyuncs.com/%E5%A4%B4%E5%83%8F/Avatar_default.png',
       isLoading: false,
       arrowFlag: 'never',
       loginOrSign: true, // true : login, false : sign
@@ -215,6 +216,27 @@ export default {
       this.signForm.password = ''
       this.signForm.confirmPwd = ''
       this.clearValidateMsg(refName)
+    },
+    async getAvatar () {
+      if (this.loginForm.loginName.length !== 11) {
+        return
+      }
+      await this.$axios({
+        method: 'POST',
+        url: '/static/user/info/' + this.loginForm.loginName
+      }).then(
+        (response) => {
+          const data = response.data
+          if (data.code !== 0) {
+            this.$message.error(data.msg)
+            return false
+          }
+          if (data.page.headUrl) {
+            this.headUrl = data.page.headUrl
+          }
+          return true
+        }
+      )
     },
     getBodyHeight () {
       const that = this

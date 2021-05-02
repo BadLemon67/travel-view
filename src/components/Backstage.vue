@@ -45,16 +45,18 @@
       </el-aside>
       <el-container>
         <el-header>
-            <el-dropdown @command="dropdownCommand">
-              <img src="../assets/pic/logo.png" alt="avatar" class="user_avatar">
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item icon="el-icon-circle-close" command="logout">退出登录</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+            <div class="user_area">
+              <el-dropdown @command="dropdownCommand">
+                <img src="../assets/pic/logo.png" alt="avatar" class="user_avatar">
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item icon="el-icon-circle-close" command="logout">退出登录</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </div>
         </el-header>
-          <el-main>
-            <router-view/>
-          </el-main>
+        <el-main>
+          <router-view/>
+        </el-main>
       </el-container>
     </el-container>
   </div>
@@ -76,6 +78,22 @@ export default {
         case 'logout': this.logout(); break
         default: break
       }
+    },
+    async logout () {
+      await this.$axios({
+        method: 'POST',
+        url: '/sys/user/logout'
+      }).then(
+        (response) => {
+          const data = response.data
+          if (data.code !== 0) {
+            this.$message.error(data.msg)
+            return false
+          }
+          this.$router.push('/login')
+          return true
+        }
+      )
     }
   }
 }
@@ -83,14 +101,25 @@ export default {
 
 <style lang="css">
 .user_avatar {
-  height: 4vw;
-  width: 4vw;
+  height: 3vw;
+  width: 3vw;
   border: solid 1px #eeeeee;
   box-shadow: 0 0 10px #dddddd;
   border-radius: 50%;
 }
 
+.user_area {
+  height: 60px;
+  width: 5%;
+  position: absolute;
+  right: 0;
+}
+
 .el-header {
   box-shadow: 0 0 10px #dddddd;
+}
+
+.el-tooltip__popper {
+  width: 18%;
 }
 </style>
